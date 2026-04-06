@@ -1,0 +1,20 @@
+# Osobné premenné a heslá
+.env
+
+# Lokálna databáza s históriou
+database.sqlite
+
+# Zložky pythonu
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtuálne prostredie
+venv/
+env/
+.venv/
+
+# Rôzne systémové súbory
+.DS_Store
+*.log
