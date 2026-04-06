@@ -11,7 +11,7 @@ load_dotenv()
 
 from backend.database import (
     init_db, get_agent_portfolio, get_performance_history,
-    get_all_recent_trades, get_all_agents, create_round, complete_round
+    get_all_recent_trades, get_all_agents, create_round, complete_round, reset_db
 )
 from backend.agents.gemini_agent import GeminiAgent
 from backend.agents.gpt_agent import GPTAgent
@@ -95,6 +95,15 @@ def api_update_prices():
         except Exception as e:
             pass
     return {"status": "ok", "message": "Ceny aktualizované"}
+
+
+@app.post("/api/reset")
+def api_reset():
+    global round_running
+    if round_running:
+        return {"status": "error", "message": "Počkaj, kým dobehne aktuálne kolo!"}
+    reset_db()
+    return {"status": "ok", "message": "Simulácia úspešne resetovaná do pôvodného stavu"}
 
 
 def run_all_agents():

@@ -109,6 +109,32 @@ def init_db():
     conn.close()
 
 
+def reset_db():
+    conn = get_connection()
+    cursor = conn.cursor()
+    # Delete all data from tracking tables
+    cursor.execute('DELETE FROM portfolio_snapshots')
+    cursor.execute('DELETE FROM holdings')
+    cursor.execute('DELETE FROM trades')
+    cursor.execute('DELETE FROM agent_logs')
+    cursor.execute('DELETE FROM rounds')
+    
+    # Reset all agents to initial capital
+    cursor.execute('UPDATE agents SET initial_capital = 100.0')
+    
+    # Re-insert the starting snapshot for each agent
+    agents = cursor.execute('SELECT id FROM agents').fetchall()
+    for row in agents:
+        agent_id = row['id']
+        cursor.execute(
+            'INSERT INTO portfolio_snapshots (agent_id, cash, holdings_value, total_value, pnl_percent) VALUES (?, 100.0, 0.0, 100.0, 0.0)',
+            (agent_id,)
+        )
+    
+    conn.commit()
+    conn.close()
+
+
 def get_agent_portfolio(agent_id: str) -> dict:
     conn = get_connection()
     snapshot = conn.execute(

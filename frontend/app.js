@@ -281,6 +281,32 @@ async function updatePrices() {
   }
 }
 
+async function resetSimulation() {
+  if (!confirm("⚠️ Naozaj chcete vymazať celú databázu a zresetovať investície agentov späť na 100€?")) {
+    return;
+  }
+  const btn = document.getElementById('btnReset');
+  btn.disabled = true;
+  btn.textContent = '...';
+  try {
+    const r = await fetch('/api/reset', { method: 'POST' });
+    const data = await r.json();
+    if (data.status === 'ok') {
+        showToast('🗑️ ' + data.message);
+        // Force full page reload to clear old charts from memory
+        setTimeout(() => location.reload(), 1500);
+    } else {
+        showToast('❌ Chyba: ' + data.message);
+        btn.disabled = false;
+        btn.textContent = '✖ Reset';
+    }
+  } catch (e) {
+    showToast('❌ Chyba pripájania');
+    btn.disabled = false;
+    btn.textContent = '✖ Reset';
+  }
+}
+
 function showToast(msg) {
   const existing = document.querySelector('.toast');
   if (existing) existing.remove();
